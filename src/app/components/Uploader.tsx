@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
 import { Upload, Camera, Users, CheckCircle, AlertCircle, Loader2, X } from 'lucide-react';
 
@@ -22,11 +22,27 @@ const ImmichUploader = () => {
   const [files, setFiles] = useState<FileWithMetadata[]>([]);
   const [uploading, setUploading] = useState(false);
   const [albumName, setAlbumName] = useState('');
-  const [userName, setUserName] = useState('');
   const [results, setResults] = useState<UploadResult[]>([]);
   const [showResults, setShowResults] = useState(false);
   const [error, setError] = useState('');
+  const [csrfToken, setCsrfToken] = useState<string>('');
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    // Get CSRF token on component mount
+    const fetchCsrfToken = async () => {
+      try {
+        const response = await fetch('/share/api/csrf');
+        if (response.ok) {
+          const data = await response.json();
+          setCsrfToken(data.csrfToken);
+        }
+      } catch (error) {
+        console.error('Failed to fetch CSRF token:', error);
+      }
+    };
+    fetchCsrfToken();
+  }, []);
 
   // API call to upload files
   const uploadFiles = async () => {
@@ -37,11 +53,13 @@ const ImmichUploader = () => {
     });
     
     formData.append('albumName', albumName);
-    formData.append('userName', userName);
 
     try {
-      const response = await fetch('/api/upload', {
+      const response = await fetch('/share/api/upload', {
         method: 'POST',
+        headers: {
+          'X-CSRF-Token': csrfToken,
+        },
         body: formData,
       });
 
@@ -82,8 +100,8 @@ const ImmichUploader = () => {
   };
 
   const handleUpload = async () => {
-    if (!albumName.trim() || !userName.trim()) {
-      setError('Please enter your name and album name');
+    if (!albumName.trim()) {
+      setError('Please enter an album name');
       return;
     }
 
@@ -112,7 +130,6 @@ const ImmichUploader = () => {
     files.forEach(fileObj => URL.revokeObjectURL(fileObj.preview));
     setFiles([]);
     setAlbumName('');
-    setUserName('');
     setResults([]);
     setShowResults(false);
     setError('');
@@ -140,34 +157,19 @@ const ImmichUploader = () => {
               </div>
             )}
 
-            {/* User Info Form */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Your Name
-                </label>
-                <input
-                  type="text"
-                  value={userName}
-                  onChange={(e) => setUserName(e.target.value)}
-                  placeholder="Enter your name"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  disabled={uploading}
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Album Name
-                </label>
-                <input
-                  type="text"
-                  value={albumName}
-                  onChange={(e) => setAlbumName(e.target.value)}
-                  placeholder="e.g., Beach Trip 2024"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  disabled={uploading}
-                />
-              </div>
+            {/* Album Info Form */}
+            <div className="mb-6">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Album Name
+              </label>
+              <input
+                type="text"
+                value={albumName}
+                onChange={(e) => setAlbumName(e.target.value)}
+                placeholder="e.g., Beach Trip 2024"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                disabled={uploading}
+              />
             </div>
 
             {/* File Upload Area */}
@@ -183,7 +185,7 @@ const ImmichUploader = () => {
             >
               <Upload className="w-12 h-12 text-gray-400 mx-auto mb-4" />
               <p className="text-lg text-gray-600 mb-2">
-                Tap to select photos from your iPhone
+                Tap to select photos
               </p>
               <p className="text-sm text-gray-500">
                 You can select multiple photos at once
@@ -236,7 +238,7 @@ const ImmichUploader = () => {
             {/* Upload Button */}
             <button
               onClick={handleUpload}
-              disabled={files.length === 0 || !albumName.trim() || !userName.trim() || uploading}
+              disabled={files.length === 0 || !albumName.trim() || uploading}
               className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg font-medium hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-colors"
             >
               {uploading ? (
@@ -296,9 +298,9 @@ const ImmichUploader = () => {
 
         {/* Instructions */}
         <div className="mt-8 bg-white rounded-xl shadow-lg p-6">
-          <h3 className="text-lg font-bold text-gray-800 mb-3">How to use from iPhone:</h3>
+          <h3 className="text-lg font-bold text-gray-800 mb-3">How to use:</h3>
           <ol className="space-y-2 text-sm text-gray-600">
-            <li>1. Open Safari on your iPhone</li>
+            <li>1. Open your mobile browser</li>
             <li>2. Navigate to this page</li>
             <li>3. Tap &ldquo;Select Photos&rdquo; button</li>
             <li>4. Choose multiple photos from your photo library</li>
@@ -307,8 +309,8 @@ const ImmichUploader = () => {
           </ol>
           <div className="mt-4 p-3 bg-blue-50 rounded-lg">
             <p className="text-sm text-blue-700">
-              <strong>Tip:</strong> Add this page to your iPhone home screen for easy access!
-              Tap the share button in Safari and select &ldquo;Add to Home Screen&rdquo;.
+              <strong>Tip:</strong> Add this page to your home screen for easy access!
+              Look for &ldquo;Add to Home Screen&rdquo; in your browser&apos;s menu.
             </p>
           </div>
         </div>

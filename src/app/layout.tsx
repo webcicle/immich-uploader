@@ -15,6 +15,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Immich Photo Share",
   description: "Upload and share photos to Immich albums",
+  manifest: "/share/manifest.json",
 };
 
 export default function RootLayout({

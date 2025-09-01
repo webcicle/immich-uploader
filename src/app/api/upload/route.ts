@@ -1,8 +1,48 @@
 import fs from 'fs';
 import { NextRequest, NextResponse } from 'next/server';
 import { ImmichService } from '@/services/immich';
+import { getSession, updateSessionAlbums } from '@/lib/auth';
+import { checkRateLimit, getRateLimitHeaders } from '@/lib/rateLimit';
+import { jwtVerify } from 'jose';
 
 export async function POST(req: NextRequest) {
+  // Check authentication
+  const session = await getSession();
+  if (!session) {
+    return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
+  }
+
+  // Check CSRF token
+  const csrfToken = req.headers.get('x-csrf-token');
+  if (!csrfToken) {
+    return NextResponse.json({ error: 'CSRF token required' }, { status: 403 });
+  }
+
+  try {
+    const SECRET_KEY = new TextEncoder().encode(
+      process.env.JWT_SECRET || 'your-secret-key-change-this-in-production'
+    );
+    const { payload } = await jwtVerify(csrfToken, SECRET_KEY);
+    
+    if (payload.sessionId !== session.sessionId || payload.purpose !== 'csrf') {
+      return NextResponse.json({ error: 'Invalid CSRF token' }, { status: 403 });
+    }
+  } catch {
+    return NextResponse.json({ error: 'Invalid CSRF token' }, { status: 403 });
+  }
+
+  // Check rate limit per session
+  const rateLimit = checkRateLimit(session.sessionId, 3, 10 * 60 * 1000); // 3 uploads per 10 minutes
+  if (!rateLimit.allowed) {
+    return NextResponse.json(
+      { error: 'Too many upload requests. Please try again later.' },
+      { 
+        status: 429,
+        headers: getRateLimitHeaders(rateLimit)
+      }
+    );
+  }
+
   const immichServerUrl = process.env.IMMICH_SERVER_URL || 'http://immich-server:2283';
   const immichApiKey = process.env.IMMICH_API_KEY;
 
@@ -17,7 +57,6 @@ export async function POST(req: NextRequest) {
     const formData = await req.formData();
     
     const albumName = formData.get('albumName') as string;
-    const userName = formData.get('userName') as string;
     const photoFiles = formData.getAll('photos') as File[];
 
     if (!photoFiles || photoFiles.length === 0) {
@@ -28,15 +67,29 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Album name is required' }, { status: 400 });
     }
 
-    console.log(`Processing upload: ${photoFiles.length} files for album "${albumName}" by ${userName}`);
+    console.log(`Processing upload: ${photoFiles.length} files for album "${albumName}" by ${session.userName}`);
 
     // Create new album
-    const description = userName ? `Shared by ${userName}` : 'Shared photos';
+    const description = `Shared by ${session.userName}`;
     const album = await immichService.createAlbum({
       albumName,
       description
     });
     console.log(`Created album: ${album.id}`);
+
+    // Validate file types and sizes
+    const allowedTypes = [
+      'image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp',
+      'video/mp4', 'video/mov', 'video/avi', 'video/quicktime'
+    ];
+    const maxFileSize = 100 * 1024 * 1024; // 100MB
+    const maxFiles = 50;
+
+    if (photoFiles.length > maxFiles) {
+      return NextResponse.json({ 
+        error: `Too many files. Maximum ${maxFiles} files allowed.` 
+      }, { status: 400 });
+    }
 
     // Upload each file to Immich
     const uploadResults = [];
@@ -44,6 +97,26 @@ export async function POST(req: NextRequest) {
 
     for (const file of photoFiles) {
       if (!file) continue;
+      
+      // Validate file type
+      if (!allowedTypes.includes(file.type)) {
+        uploadResults.push({
+          success: false,
+          filename: file.name || 'unknown',
+          error: 'Invalid file type. Only images and videos are allowed.'
+        });
+        continue;
+      }
+
+      // Validate file size
+      if (file.size > maxFileSize) {
+        uploadResults.push({
+          success: false,
+          filename: file.name || 'unknown',
+          error: 'File too large. Maximum 100MB per file.'
+        });
+        continue;
+      }
       
       let tempFilePath: string | null = null;
       
@@ -109,6 +182,9 @@ export async function POST(req: NextRequest) {
         // Don't fail the whole request if album addition fails
       }
     }
+
+    // Update session with the new album
+    await updateSessionAlbums(session.sessionId, album.id);
 
     return NextResponse.json({
       success: true,

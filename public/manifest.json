@@ -1,0 +1,27 @@
+{
+  "name": "Share Photos - Immich",
+  "short_name": "Share Photos",
+  "description": "Upload photos to create shared albums",
+  "start_url": "/share/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#2563eb",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/share/api/icon",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/share/api/icon",
+      "sizes": "512x512", 
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["photo", "utilities"],
+  "screenshots": [],
+  "prefer_related_applications": false
+}

@@ -52,11 +52,11 @@ export interface CreateAlbumResponse {
     isFavorite: boolean;
     isArchived: boolean;
     duration?: string;
-    exifInfo?: any;
-    smartInfo?: any;
+    exifInfo?: Record<string, unknown>;
+    smartInfo?: Record<string, unknown>;
     livePhotoVideoId?: string;
-    tags: any[];
-    people: any[];
+    tags: Record<string, unknown>[];
+    people: Record<string, unknown>[];
     checksum: string;
   }>;
 }
@@ -119,11 +119,11 @@ export interface GetAlbumResponse {
     isFavorite: boolean;
     isArchived: boolean;
     duration?: string;
-    exifInfo?: any;
-    smartInfo?: any;
+    exifInfo?: Record<string, unknown>;
+    smartInfo?: Record<string, unknown>;
     livePhotoVideoId?: string;
-    tags: any[];
-    people: any[];
+    tags: Record<string, unknown>[];
+    people: Record<string, unknown>[];
     checksum: string;
   }>;
 }

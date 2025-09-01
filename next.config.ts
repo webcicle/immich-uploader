@@ -5,8 +5,8 @@ const nextConfig: NextConfig = {
   output: 'standalone',
   
   // Base path for subpath deployment
-  basePath: '/share',
-  assetPrefix: '/share',
+  basePath: '/share-photos',
+  assetPrefix: '/share-photos',
   
   // Trailing slash for better routing
   trailingSlash: true,

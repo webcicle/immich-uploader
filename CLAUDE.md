@@ -28,7 +28,7 @@ pnpm lint
 - **Next.js 15.5** with App Router and TypeScript
 - **Tailwind CSS 4.0** for styling
 - **React 19.1** with modern components
-- Configured for **subpath deployment** at `/share` with standalone output for Docker
+- Configured for **subpath deployment** at `/share-photos` with standalone output for Docker
 
 ### Key Components
 - `src/app/page.tsx` - Main uploader page with PWA meta tags

@@ -21,7 +21,7 @@ export default function GlobalError({
               Try again
             </button>
             <a 
-              href="/share" 
+              href="/share-photos" 
               className="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700 transition-colors"
             >
               Go Home

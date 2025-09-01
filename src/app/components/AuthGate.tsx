@@ -33,7 +33,7 @@ const AuthGate = ({ children }: AuthGateProps) => {
 
   const checkAuthStatus = async () => {
     try {
-      const response = await fetch('/share/api/auth');
+      const response = await fetch('/share-photos/api/auth');
       if (response.ok) {
         const data = await response.json();
         if (data.authenticated) {
@@ -78,7 +78,7 @@ const AuthGate = ({ children }: AuthGateProps) => {
     setError('');
 
     try {
-      const response = await fetch('/share/api/auth', {
+      const response = await fetch('/share-photos/api/auth', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

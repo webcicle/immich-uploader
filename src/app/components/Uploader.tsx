@@ -34,7 +34,7 @@ const ImmichUploader = () => {
     // Get CSRF token on component mount
     const fetchCsrfToken = async () => {
       try {
-        const response = await fetch('/share/api/csrf');
+        const response = await fetch('/share-photos/api/csrf');
         if (response.ok) {
           const data = await response.json();
           setCsrfToken(data.csrfToken);
@@ -57,7 +57,7 @@ const ImmichUploader = () => {
     formData.append('albumName', albumName);
 
     try {
-      const response = await fetch('/share/api/upload', {
+      const response = await fetch('/share-photos/api/upload', {
         method: 'POST',
         headers: {
           'X-CSRF-Token': csrfToken,

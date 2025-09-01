@@ -13,10 +13,10 @@ export const metadata: Metadata = {
     title: 'Share Photos'
   },
   icons: {
-    apple: '/share/icon.svg',
-    icon: '/share/icon.svg'
+    apple: '/share-photos/icon.svg',
+    icon: '/share-photos/icon.svg'
   },
-  manifest: '/share/manifest.json'
+  manifest: '/share-photos/manifest.json'
 };
 
 export const viewport: Viewport = {

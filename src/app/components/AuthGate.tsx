@@ -2,6 +2,8 @@
 
 import React, { useState, useEffect } from 'react';
 import { Lock, CheckCircle } from 'lucide-react';
+import { useLanguage } from '@/contexts/LanguageContext';
+import LanguageSelector from '@/components/LanguageSelector';
 
 interface AuthGateProps {
   children: React.ReactNode;
@@ -14,6 +16,7 @@ interface AuthState {
 }
 
 const AuthGate = ({ children }: AuthGateProps) => {
+  const { language, translations } = useLanguage();
   const [authState, setAuthState] = useState<AuthState>({
     isAuthenticated: false,
     isLoading: true,
@@ -67,7 +70,7 @@ const AuthGate = ({ children }: AuthGateProps) => {
     e.preventDefault();
     
     if (!invitationCode.trim() || !userName.trim()) {
-      setError('Please enter both invitation code and your name');
+      setError(translations.pleaseEnterBothFields);
       return;
     }
 
@@ -82,7 +85,8 @@ const AuthGate = ({ children }: AuthGateProps) => {
         },
         body: JSON.stringify({
           invitationCode: invitationCode.trim(),
-          userName: userName.trim()
+          userName: userName.trim(),
+          language: language
         }),
       });
 
@@ -94,10 +98,10 @@ const AuthGate = ({ children }: AuthGateProps) => {
         });
       } else {
         const errorData = await response.json();
-        setError(errorData.error || 'Authentication failed');
+        setError(errorData.error || translations.authenticationFailed);
       }
     } catch (error) {
-      setError('Connection error. Please try again.');
+      setError(translations.connectionError);
       console.error('Authentication error:', error);
     } finally {
       setIsAuthenticating(false);
@@ -109,7 +113,7 @@ const AuthGate = ({ children }: AuthGateProps) => {
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading...</p>
+          <p className="text-gray-600">{translations.loading}</p>
         </div>
       </div>
     );
@@ -119,13 +123,18 @@ const AuthGate = ({ children }: AuthGateProps) => {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
         <div className="max-w-md mx-auto mt-16">
+          {/* Language Selector */}
+          <div className="flex justify-end mb-4">
+            <LanguageSelector />
+          </div>
+          
           {/* Header */}
           <div className="text-center mb-8">
             <div className="flex items-center justify-center mb-4">
               <Lock className="w-12 h-12 text-blue-600 mr-3" />
-              <h1 className="text-3xl font-bold text-gray-800">Access Required</h1>
+              <h1 className="text-3xl font-bold text-gray-800">{translations.accessRequired}</h1>
             </div>
-            <p className="text-gray-600">Enter the invitation code to upload photos</p>
+            <p className="text-gray-600">{translations.enterInvitationCode}</p>
           </div>
 
           <div className="bg-white rounded-xl shadow-lg p-6">
@@ -139,13 +148,13 @@ const AuthGate = ({ children }: AuthGateProps) => {
             <form onSubmit={handleAuthentication} className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Your Name
+                  {translations.yourName}
                 </label>
                 <input
                   type="text"
                   value={userName}
                   onChange={(e) => setUserName(e.target.value)}
-                  placeholder="Enter your name"
+                  placeholder={translations.enterYourName}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                   disabled={isAuthenticating}
                   required
@@ -154,13 +163,13 @@ const AuthGate = ({ children }: AuthGateProps) => {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Invitation Code
+                  {translations.invitationCode}
                 </label>
                 <input
                   type="password"
                   value={invitationCode}
                   onChange={(e) => setInvitationCode(e.target.value)}
-                  placeholder="Enter invitation code"
+                  placeholder={translations.enterInvitationCodePlaceholder}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                   disabled={isAuthenticating}
                   required
@@ -175,22 +184,21 @@ const AuthGate = ({ children }: AuthGateProps) => {
                 {isAuthenticating ? (
                   <>
                     <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-                    Authenticating...
+                    {translations.authenticating}
                   </>
                 ) : (
                   <>
                     <CheckCircle className="w-5 h-5" />
-                    Enter Photo Share
+                    {translations.enterPhotoShare}
                   </>
                 )}
               </button>
             </form>
 
             <div className="mt-6 p-4 bg-blue-50 rounded-lg">
-              <h3 className="text-sm font-medium text-blue-800 mb-2">For friends & family:</h3>
+              <h3 className="text-sm font-medium text-blue-800 mb-2">{translations.forFriendsFamily}</h3>
               <p className="text-sm text-blue-700">
-                Ask the person who shared this link for the invitation code. 
-                This helps keep the photo sharing private and secure.
+                {translations.invitationCodeHelp}
               </p>
             </div>
           </div>

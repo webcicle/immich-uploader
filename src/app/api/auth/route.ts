@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createSession, verifyInvitationCode, getSession } from '@/lib/auth';
 import { checkRateLimit, getRateLimitHeaders } from '@/lib/rateLimit';
+import { availableLanguages, Language } from '@/lib/translations';
 
 export async function POST(req: NextRequest) {
   const clientIP = req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip') || 'unknown';
@@ -18,7 +19,7 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const { invitationCode, userName } = await req.json();
+    const { invitationCode, userName, language } = await req.json();
     
     if (!invitationCode || !userName) {
       return NextResponse.json(
@@ -50,6 +51,15 @@ export async function POST(req: NextRequest) {
       maxAge: 7 * 24 * 60 * 60, // 7 days
       path: '/'
     });
+    
+    // Set language cookie if provided and valid
+    if (language && availableLanguages.includes(language as Language)) {
+      response.cookies.set('immich-share-language', language, {
+        path: '/',
+        maxAge: 60 * 60 * 24 * 365, // 1 year
+        sameSite: 'lax'
+      });
+    }
     
     return response;
   } catch (error) {

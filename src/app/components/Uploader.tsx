@@ -3,6 +3,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
 import { Upload, Camera, Users, CheckCircle, AlertCircle, Loader2, X } from 'lucide-react';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface FileWithMetadata {
   id: number;
@@ -19,6 +20,7 @@ interface UploadResult {
 }
 
 const ImmichUploader = () => {
+  const { translations } = useLanguage();
   const [files, setFiles] = useState<FileWithMetadata[]>([]);
   const [uploading, setUploading] = useState(false);
   const [albumName, setAlbumName] = useState('');
@@ -101,7 +103,7 @@ const ImmichUploader = () => {
 
   const handleUpload = async () => {
     if (!albumName.trim()) {
-      setError('Please enter an album name');
+      setError(translations.pleaseEnterAlbumName);
       return;
     }
 
@@ -119,7 +121,7 @@ const ImmichUploader = () => {
       setFiles([]);
       setUploading(false);
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Upload failed. Please try again.';
+      const errorMessage = error instanceof Error ? error.message : translations.uploadFailed;
       setError(errorMessage);
       setUploading(false);
     }
@@ -143,9 +145,9 @@ const ImmichUploader = () => {
         <div className="text-center mb-8">
           <div className="flex items-center justify-center mb-4">
             <Camera className="w-12 h-12 text-blue-600 mr-3" />
-            <h1 className="text-3xl font-bold text-gray-800">Share Photos</h1>
+            <h1 className="text-3xl font-bold text-gray-800">{translations.sharePhotos}</h1>
           </div>
-          <p className="text-gray-600">Upload photos to create a shared album</p>
+          <p className="text-gray-600">{translations.uploadPhotosToCreateAlbum}</p>
         </div>
 
         {!showResults ? (
@@ -160,13 +162,13 @@ const ImmichUploader = () => {
             {/* Album Info Form */}
             <div className="mb-6">
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Album Name
+                {translations.albumName}
               </label>
               <input
                 type="text"
                 value={albumName}
                 onChange={(e) => setAlbumName(e.target.value)}
-                placeholder="e.g., Beach Trip 2024"
+                placeholder={translations.albumNamePlaceholder}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 disabled={uploading}
               />
@@ -185,10 +187,10 @@ const ImmichUploader = () => {
             >
               <Upload className="w-12 h-12 text-gray-400 mx-auto mb-4" />
               <p className="text-lg text-gray-600 mb-2">
-                Tap to select photos
+                {translations.tapToSelectPhotos}
               </p>
               <p className="text-sm text-gray-500">
-                You can select multiple photos at once
+                {translations.selectMultiplePhotos}
               </p>
               <input
                 ref={fileInputRef}
@@ -205,7 +207,7 @@ const ImmichUploader = () => {
             {files.length > 0 && (
               <div className="mb-6">
                 <h3 className="text-lg font-medium text-gray-700 mb-3">
-                  Selected Photos ({files.length})
+                  {translations.selectedPhotos} ({files.length})
                 </h3>
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-3 max-h-60 overflow-y-auto">
                   {files.map((fileObj) => (
@@ -244,12 +246,12 @@ const ImmichUploader = () => {
               {uploading ? (
                 <>
                   <Loader2 className="w-5 h-5 animate-spin" />
-                  Uploading Photos...
+                  {translations.uploadingPhotos}
                 </>
               ) : (
                 <>
                   <Users className="w-5 h-5" />
-                  Create Album & Upload ({files.length} photos)
+                  {translations.createAlbumAndUpload} ({files.length} {translations.photosText})
                 </>
               )}
             </button>
@@ -259,9 +261,9 @@ const ImmichUploader = () => {
           <div className="bg-white rounded-xl shadow-lg p-6">
             <div className="text-center mb-6">
               <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
-              <h2 className="text-2xl font-bold text-gray-800 mb-2">Upload Complete!</h2>
+              <h2 className="text-2xl font-bold text-gray-800 mb-2">{translations.uploadComplete}</h2>
               <p className="text-gray-600">
-                Created album &ldquo;{albumName}&rdquo; with {results.filter(r => r.success).length} photos
+                {translations.createdAlbumWith} &ldquo;{albumName}&rdquo; {results.filter(r => r.success).length} {translations.photosText}
               </p>
             </div>
 
@@ -283,14 +285,14 @@ const ImmichUploader = () => {
 
             <div className="space-y-3">
               <p className="text-center text-gray-600">
-                Your photos have been added to the shared album!
+                {translations.photosAddedToAlbum}
               </p>
               
               <button
                 onClick={resetForm}
                 className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg font-medium hover:bg-blue-700 transition-colors"
               >
-                Upload More Photos
+                {translations.uploadMorePhotos}
               </button>
             </div>
           </div>
@@ -298,19 +300,18 @@ const ImmichUploader = () => {
 
         {/* Instructions */}
         <div className="mt-8 bg-white rounded-xl shadow-lg p-6">
-          <h3 className="text-lg font-bold text-gray-800 mb-3">How to use:</h3>
+          <h3 className="text-lg font-bold text-gray-800 mb-3">{translations.howToUse}</h3>
           <ol className="space-y-2 text-sm text-gray-600">
-            <li>1. Open your mobile browser</li>
-            <li>2. Navigate to this page</li>
-            <li>3. Tap &ldquo;Select Photos&rdquo; button</li>
-            <li>4. Choose multiple photos from your photo library</li>
-            <li>5. Enter your name and album name</li>
-            <li>6. Tap &ldquo;Create Album & Upload&rdquo;</li>
+            <li>{translations.instructionStep1}</li>
+            <li>{translations.instructionStep2}</li>
+            <li>{translations.instructionStep3}</li>
+            <li>{translations.instructionStep4}</li>
+            <li>{translations.instructionStep5}</li>
+            <li>{translations.instructionStep6}</li>
           </ol>
           <div className="mt-4 p-3 bg-blue-50 rounded-lg">
             <p className="text-sm text-blue-700">
-              <strong>Tip:</strong> Add this page to your home screen for easy access!
-              Look for &ldquo;Add to Home Screen&rdquo; in your browser&apos;s menu.
+              <strong>{translations.tipTitle}</strong> {translations.tipDescription}
             </p>
           </div>
         </div>

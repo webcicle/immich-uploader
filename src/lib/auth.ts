@@ -1,4 +1,4 @@
-import { SignJWT, jwtVerify } from 'jose';
+import { SignJWT, jwtVerify, JWTPayload } from 'jose';
 import { cookies } from 'next/headers';
 
 const SECRET_KEY = new TextEncoder().encode(
@@ -7,7 +7,7 @@ const SECRET_KEY = new TextEncoder().encode(
 
 const INVITATION_CODE = process.env.INVITATION_CODE || 'family2024';
 
-export interface SessionData {
+export interface SessionData extends JWTPayload {
   sessionId: string;
   userName: string;
   albumIds: string[];

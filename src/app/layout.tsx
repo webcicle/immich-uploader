@@ -1,6 +1,10 @@
+import "./globals.css";
+
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import "./globals.css";
+import { cookies } from 'next/headers';
+import { LanguageProvider } from '@/contexts/LanguageContext';
+import { parseLanguageFromCookie } from '@/lib/language';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -23,12 +27,18 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const cookieStore = cookies();
+  const cookieString = cookieStore.toString();
+  const initialLanguage = parseLanguageFromCookie(cookieString);
+
   return (
-    <html lang="en">
+    <html lang={initialLanguage}>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {children}
+        <LanguageProvider initialLanguage={initialLanguage}>
+          {children}
+        </LanguageProvider>
       </body>
     </html>
   );

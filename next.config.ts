@@ -4,6 +4,10 @@ const nextConfig: NextConfig = {
   // Enable standalone output for Docker
   output: 'standalone',
   
+  // Base path for subpath deployment
+  basePath: '/share',
+  assetPrefix: '/share',
+  
   // Trailing slash for better routing
   trailingSlash: true,
 
@@ -14,7 +18,9 @@ const nextConfig: NextConfig = {
   
   // Enable experimental features if needed
   experimental: {
-    // serverActions: true,
+    serverActions: {
+      bodySizeLimit: '100mb',
+    },
   },
 };
 

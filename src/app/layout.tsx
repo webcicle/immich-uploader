@@ -22,12 +22,12 @@ export const metadata: Metadata = {
   manifest: "/manifest.json",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   const cookieString = cookieStore.toString();
   const initialLanguage = parseLanguageFromCookie(cookieString);
 

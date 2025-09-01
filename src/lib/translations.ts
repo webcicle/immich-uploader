@@ -134,13 +134,13 @@ export const translations: Record<Language, Translations> = {
   
   sv: {
     // Page titles and metadata
-    pageTitle: 'Dela Foton - Immich',
-    pageDescription: 'Ladda upp foton för att skapa delade album',
+    pageTitle: 'Dela Foton med Viktor',
+    pageDescription: 'Ladda upp foton för att skapa ett delat album',
     appTitle: 'Dela Foton',
     
     // Authentication page
     accessRequired: 'Åtkomst Krävs',
-    enterInvitationCode: 'Ange inbjudningskoden för att ladda upp foton',
+    enterInvitationCode: 'Ange din inbjudningskod för att ladda upp foton',
     yourName: 'Ditt Namn',
     enterYourName: 'Ange ditt namn',
     invitationCode: 'Inbjudningskod',
@@ -148,13 +148,13 @@ export const translations: Record<Language, Translations> = {
     authenticating: 'Autentiserar...',
     enterPhotoShare: 'Gå in i Fotdelning',
     forFriendsFamily: 'För vänner och familj:',
-    invitationCodeHelp: 'Fråga personen som delade denna länk efter inbjudningskoden. Detta hjälper till att hålla fotdelningen privat och säker.',
+    invitationCodeHelp: 'Be Viktor om inbjudningskoden. Koden är bara för dig och ska inte delas. Detta hjälper till att hålla fotdelningen privat och säker.',
     
     // Main uploader page
     sharePhotos: 'Dela Foton',
     uploadPhotosToCreateAlbum: 'Ladda upp foton för att skapa ett delat album',
     albumName: 'Albumnamn',
-    albumNamePlaceholder: 't.ex. Strandresa 2024',
+    albumNamePlaceholder: 't.ex. Sommaren 2025',
     tapToSelectPhotos: 'Tryck för att välja foton',
     selectMultiplePhotos: 'Du kan välja flera foton samtidigt',
     selectedPhotos: 'Valda Foton',
@@ -162,19 +162,19 @@ export const translations: Record<Language, Translations> = {
     uploadingPhotos: 'Laddar upp Foton...',
     
     // Results page
-    uploadComplete: 'Uppladdning Klar!',
+    uploadComplete: 'Uppladdningen är klar!',
     createdAlbumWith: 'Skapade album',
     photosText: 'foton',
     photosAddedToAlbum: 'Dina foton har lagts till i det delade albumet!',
     uploadMorePhotos: 'Ladda upp Fler Foton',
     
     // Instructions
-    howToUse: 'Så här använder du:',
+    howToUse: 'Så här använder du verktyget:',
     instructionStep1: '1. Öppna din mobilwebbläsare',
     instructionStep2: '2. Navigera till denna sida',
     instructionStep3: '3. Tryck på knappen "Välj Foton"',
-    instructionStep4: '4. Välj flera foton från ditt fotobibliotek',
-    instructionStep5: '5. Ange ditt namn och albumnamn',
+    instructionStep4: '4. Välj ett eller flera foton från ditt fotobibliotek',
+    instructionStep5: '5. Ange ett albumnamn',
     instructionStep6: '6. Tryck på "Skapa Album & Ladda upp"',
     tipTitle: 'Tips:',
     tipDescription: 'Lägg till denna sida på din startskärm för enkel åtkomst! Leta efter "Lägg till på startskärm" i din webbläsares meny.',

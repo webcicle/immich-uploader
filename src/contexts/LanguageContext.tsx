@@ -8,6 +8,7 @@ interface LanguageContextType {
   language: Language;
   translations: Translations;
   setLanguage: (language: Language) => void;
+  isLoaded: boolean;
 }
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
@@ -19,18 +20,16 @@ interface LanguageProviderProps {
 
 export function LanguageProvider({ children, initialLanguage }: LanguageProviderProps) {
   const [language, setLanguageState] = useState<Language>(initialLanguage || defaultLanguage);
-  const [translations, setTranslations] = useState<Translations>(getTranslations(language));
+  const [translations, setTranslations] = useState<Translations>(getTranslations(initialLanguage || defaultLanguage));
+  const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
-    // On initial load, get language from cookie if not provided as prop
-    if (!initialLanguage) {
-      const browserLanguage = getLanguageFromBrowser();
-      if (browserLanguage !== language) {
-        setLanguageState(browserLanguage);
-        setTranslations(getTranslations(browserLanguage));
-      }
-    }
-  }, [initialLanguage, language]);
+    // Initialize language from server-side props or browser
+    const finalLanguage = initialLanguage || getLanguageFromBrowser();
+    setLanguageState(finalLanguage);
+    setTranslations(getTranslations(finalLanguage));
+    setIsLoaded(true);
+  }, [initialLanguage]);
 
   const setLanguage = (newLanguage: Language) => {
     setLanguageState(newLanguage);
@@ -38,12 +37,8 @@ export function LanguageProvider({ children, initialLanguage }: LanguageProvider
     setLanguageCookie(newLanguage);
   };
 
-  useEffect(() => {
-    setTranslations(getTranslations(language));
-  }, [language]);
-
   return (
-    <LanguageContext.Provider value={{ language, translations, setLanguage }}>
+    <LanguageContext.Provider value={{ language, translations, setLanguage, isLoaded }}>
       {children}
     </LanguageContext.Provider>
   );

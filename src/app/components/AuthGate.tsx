@@ -16,7 +16,7 @@ interface AuthState {
 }
 
 const AuthGate = ({ children }: AuthGateProps) => {
-  const { language, translations } = useLanguage();
+  const { language, translations, isLoaded } = useLanguage();
   const [authState, setAuthState] = useState<AuthState>({
     isAuthenticated: false,
     isLoading: true,
@@ -108,12 +108,12 @@ const AuthGate = ({ children }: AuthGateProps) => {
     }
   };
 
-  if (authState.isLoading) {
+  if (authState.isLoading || !isLoaded) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">{translations.loading}</p>
+          <p className="text-gray-600">{isLoaded ? translations.loading : 'Loading...'}</p>
         </div>
       </div>
     );

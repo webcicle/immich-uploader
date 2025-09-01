@@ -4,22 +4,8 @@ const nextConfig: NextConfig = {
   // Enable standalone output for Docker
   output: 'standalone',
   
-  // Base path for subpath deployment
-  basePath: '/share',
-  assetPrefix: '/share',
-  
   // Trailing slash for better routing
   trailingSlash: true,
-  
-  // API routes configuration
-  async rewrites() {
-    return [
-      {
-        source: '/share/api/:path*',
-        destination: '/api/:path*',
-      },
-    ];
-  },
 
   // Environment variables
   env: {

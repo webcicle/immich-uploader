@@ -70,5 +70,6 @@ Required environment variables:
 - Uses `pnpm` as package manager
 - TypeScript strict mode enabled
 - Path aliases configured with `@/*` pointing to `src/*`
+- Always refer to the updated official Immich API documentation for any updates and iteractions with it: https://immich.app/docs/api/
 - ESLint configured with Next.js and TypeScript rules
 - No test framework currently configured

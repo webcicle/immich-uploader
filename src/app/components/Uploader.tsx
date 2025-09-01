@@ -1,3 +1,5 @@
+"use client"
+
 import React, { useState, useRef } from 'react';
 import Image from 'next/image';
 import { Upload, Camera, Users, CheckCircle, AlertCircle, Loader2, X } from 'lucide-react';
@@ -38,7 +40,7 @@ const ImmichUploader = () => {
     formData.append('userName', userName);
 
     try {
-      const response = await fetch('/share/api/upload', {
+      const response = await fetch('/api/upload', {
         method: 'POST',
         body: formData,
       });

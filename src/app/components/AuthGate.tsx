@@ -124,7 +124,7 @@ const AuthGate = ({ children }: AuthGateProps) => {
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
         <div className="max-w-md mx-auto mt-16">
           {/* Language Selector */}
-          <div className="flex justify-end mb-4">
+          <div className="mb-4">
             <LanguageSelector />
           </div>
           

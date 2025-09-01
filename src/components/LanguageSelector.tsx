@@ -24,20 +24,22 @@ export default function LanguageSelector({ className = '' }: LanguageSelectorPro
   };
 
   return (
-    <div className={`flex items-center space-x-2 ${className}`}>
-      <Languages className="w-4 h-4 text-gray-600" />
-      <select
-        value={language}
-        onChange={(e) => setLanguage(e.target.value as Language)}
-        className="bg-transparent border-none text-sm text-gray-600 focus:outline-none cursor-pointer"
-        aria-label={translations.language}
-      >
-        {availableLanguages.map((lang) => (
-          <option key={lang} value={lang}>
-            {getLanguageName(lang)}
-          </option>
-        ))}
-      </select>
+    <div className={`w-full bg-white rounded-xl shadow-lg p-4 ${className}`}>
+      <div className="flex items-center space-x-3">
+        <Languages className="w-5 h-5 text-gray-600" />
+        <select
+          value={language}
+          onChange={(e) => setLanguage(e.target.value as Language)}
+          className="flex-1 bg-transparent border-none text-base text-gray-700 focus:outline-none cursor-pointer font-medium"
+          aria-label={translations.language}
+        >
+          {availableLanguages.map((lang) => (
+            <option key={lang} value={lang}>
+              {getLanguageName(lang)}
+            </option>
+          ))}
+        </select>
+      </div>
     </div>
   );
 }

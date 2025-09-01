@@ -201,5 +201,5 @@ export function getTranslations(language: Language): Translations {
   return translations[language] || translations.en;
 }
 
-export const defaultLanguage: Language = 'en';
+export const defaultLanguage: Language = 'sv';
 export const availableLanguages: Language[] = ['en', 'sv'];

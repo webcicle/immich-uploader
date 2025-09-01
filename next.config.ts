@@ -10,11 +10,6 @@ const nextConfig: NextConfig = {
   
   // Trailing slash for better routing
   trailingSlash: true,
-
-  // Environment variables
-  env: {
-    IMMICH_SERVER_URL: process.env.IMMICH_SERVER_URL,
-  },
   
   // Enable experimental features if needed
   experimental: {

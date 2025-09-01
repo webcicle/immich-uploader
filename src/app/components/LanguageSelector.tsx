@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { Languages } from 'lucide-react';
-import { useLanguage } from '@/contexts/LanguageContext';
+import { useLanguage } from '@/app/contexts/LanguageContext';
 import { availableLanguages, Language } from '@/lib/translations';
 
 interface LanguageSelectorProps {

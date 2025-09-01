@@ -39,7 +39,6 @@ pnpm lint
 ### API Routes
 - `src/app/api/upload/route.ts` - Main upload handler with Immich integration
 - `src/app/api/albums/route.ts` - Album management
-- `src/app/api/icon/route.ts` - PWA icon generation
 
 ### Immich Integration
 The app integrates with Immich via REST API using:

@@ -2,8 +2,8 @@
 
 import React, { useState, useEffect } from 'react';
 import { Lock, CheckCircle } from 'lucide-react';
-import { useLanguage } from '@/contexts/LanguageContext';
-import LanguageSelector from '@/components/LanguageSelector';
+import { useLanguage } from '@/app/contexts/LanguageContext';
+import LanguageSelector from '@/app/components/LanguageSelector';
 
 interface AuthGateProps {
   children: React.ReactNode;

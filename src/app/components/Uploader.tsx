@@ -3,7 +3,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
 import { Upload, Camera, Users, CheckCircle, AlertCircle, Loader2, X } from 'lucide-react';
-import { useLanguage } from '@/contexts/LanguageContext';
+import { useLanguage } from '@/app/contexts/LanguageContext';
 
 interface FileWithMetadata {
   id: number;

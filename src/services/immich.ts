@@ -142,12 +142,10 @@ export interface RemoveAssetsFromAlbumResponse {
 
 export class ImmichService {
   private serverUrl: string;
-  private apiKey: string;
   private headers: Record<string, string>;
 
   constructor(serverUrl: string, apiKey: string) {
     this.serverUrl = serverUrl.endsWith('/') ? serverUrl.slice(0, -1) : serverUrl;
-    this.apiKey = apiKey;
     this.headers = {
       'x-api-key': apiKey,
       'Accept': 'application/json',

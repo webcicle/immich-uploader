@@ -28,7 +28,7 @@ pnpm lint
 - **Next.js 15.5** with App Router and TypeScript
 - **Tailwind CSS 4.0** for styling
 - **React 19.1** with modern components
-- Configured for **subpath deployment** at `/share-photos` with standalone output for Docker
+- Configured for **flexible deployment** - supports both root (`/`) and subpath deployments with standalone output for Docker
 
 ### Key Components
 - `src/app/page.tsx` - Main uploader page with PWA meta tags
@@ -50,7 +50,7 @@ The app integrates with Immich via REST API using:
 ### Mobile Optimization
 - PWA-ready with iPhone-specific meta tags
 - Touch-friendly interface optimized for mobile photo selection
-- Subpath configuration for reverse proxy deployment
+- Flexible deployment configuration (root or subpath) for reverse proxy deployment
 - File upload limits: 100MB per file, 50 files max
 
 ### Error Handling
@@ -60,15 +60,24 @@ The app integrates with Immich via REST API using:
 
 ## Environment Configuration
 
-Required environment variables:
-- `IMMICH_SERVER_URL` - Immich server URL (default: http://immich-server:2283)
+Required environment variables (validated at startup):
+- `IMMICH_SERVER_URL` - Immich server URL 
 - `IMMICH_API_KEY` - API key for Immich authentication
+
+Optional environment variables:
+- `BASE_PATH` - Base path for subpath deployment (default: empty string for root deployment)
+  - Examples: 
+    - `BASE_PATH=""` → Deploy at root `/`
+    - `BASE_PATH="/share-photos"` → Deploy at subpath `/share-photos/`
 
 ## Development Notes
 
 - Uses `pnpm` as package manager
 - TypeScript strict mode enabled
 - Path aliases configured with `@/*` pointing to `src/*`
+- **Centralized configuration**: All environment variables are managed in `src/lib/config.ts` with runtime validation
+- **Environment validation**: Required variables are validated at startup with helpful error messages  
+- **Path utilities**: Dynamic path generation in `src/lib/paths.ts` for consistent URL handling
 - Always refer to the updated official Immich API documentation for any updates and iteractions with it: https://immich.app/docs/api/
 - ESLint configured with Next.js and TypeScript rules
 - No test framework currently configured

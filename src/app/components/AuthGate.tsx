@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { Lock, CheckCircle } from 'lucide-react';
 import { useLanguage } from '@/app/contexts/LanguageContext';
 import LanguageSelector from '@/app/components/LanguageSelector';
+import { apiPath } from '@/lib/paths';
 
 interface AuthGateProps {
   children: React.ReactNode;
@@ -33,7 +34,7 @@ const AuthGate = ({ children }: AuthGateProps) => {
 
   const checkAuthStatus = async () => {
     try {
-      const response = await fetch('/share-photos/api/auth');
+      const response = await fetch(apiPath('auth'));
       if (response.ok) {
         const data = await response.json();
         if (data.authenticated) {
@@ -78,7 +79,7 @@ const AuthGate = ({ children }: AuthGateProps) => {
     setError('');
 
     try {
-      const response = await fetch('/share-photos/api/auth', {
+      const response = await fetch(apiPath('auth'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

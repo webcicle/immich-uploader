@@ -1,4 +1,5 @@
 import { getSession, updateSessionAlbums } from '@/lib/auth';
+import { config } from '@/lib/config';
 import { checkRateLimit, getRateLimitHeaders } from '@/lib/rateLimit';
 import { ImmichService } from '@/services/immich';
 import fs from 'fs';
@@ -20,7 +21,7 @@ export async function POST(req: NextRequest) {
 
   try {
     const SECRET_KEY = new TextEncoder().encode(
-      process.env.JWT_SECRET || 'your-secret-key-change-this-in-production'
+      config.jwtSecret
     );
     const { payload } = await jwtVerify(csrfToken, SECRET_KEY);
     
@@ -43,8 +44,8 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const immichServerUrl = process.env.IMMICH_SERVER_URL || 'http://immich-server:2283';
-  const immichApiKey = process.env.IMMICH_API_KEY;
+  const immichServerUrl = config.immichServerUrl;
+  const immichApiKey = config.immichApiKey;
 
   if (!immichApiKey) {
     return NextResponse.json({ error: 'immichApiKeyNotConfigured' }, { status: 500 });

@@ -1,11 +1,9 @@
 import { JWTPayload, SignJWT, jwtVerify } from 'jose';
 import { cookies } from 'next/headers';
+import { config } from './config';
 
-const SECRET_KEY = new TextEncoder().encode(
-  process.env.JWT_SECRET || 'your-secret-key-change-this-in-production'
-);
 
-const INVITATION_CODE = process.env.INVITATION_CODE || 'family2024';
+
 
 export interface SessionData extends JWTPayload {
   sessionId: string;
@@ -16,6 +14,10 @@ export interface SessionData extends JWTPayload {
 }
 
 export async function createSession(userName: string): Promise<string> {
+   const SECRET_KEY = new TextEncoder().encode(
+  config.jwtSecret
+);
+
   const sessionId = generateSessionId();
   const now = Date.now();
   const expiresAt = now + (7 * 24 * 60 * 60 * 1000); // 7 days
@@ -37,6 +39,10 @@ export async function createSession(userName: string): Promise<string> {
 }
 
 export async function verifySession(token: string): Promise<SessionData | null> {
+   const SECRET_KEY = new TextEncoder().encode(
+  config.jwtSecret
+);
+
   try {
     const { payload } = await jwtVerify(token, SECRET_KEY);
     const sessionData = payload as unknown as SessionData;
@@ -54,6 +60,7 @@ export async function verifySession(token: string): Promise<SessionData | null> 
 }
 
 export function verifyInvitationCode(code: string): boolean {
+const INVITATION_CODE = config.invitationCode;
   return code === INVITATION_CODE;
 }
 
@@ -69,6 +76,9 @@ export async function getSession(): Promise<SessionData | null> {
 }
 
 export async function updateSessionAlbums(sessionId: string, albumId: string): Promise<void> {
+   const SECRET_KEY = new TextEncoder().encode(
+  config.jwtSecret
+);
   const cookieStore = await cookies();
   const token = cookieStore.get('session')?.value;
   

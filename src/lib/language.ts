@@ -1,8 +1,8 @@
 // Language utilities for managing language state and cookies
 
-import { Language, defaultLanguage, availableLanguages } from './translations';
+import { Language, availableLanguages, defaultLanguage } from './translations';
+import { LANGUAGE_COOKIE_NAME } from './config';
 
-export const LANGUAGE_COOKIE_NAME = 'immich-share-language';
 export const COOKIE_MAX_AGE = 60 * 60 * 24 * 365; // 1 year in seconds
 
 /**

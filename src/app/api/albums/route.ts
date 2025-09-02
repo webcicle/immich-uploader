@@ -1,8 +1,9 @@
+import { config } from '@/lib/config';
 import { NextResponse } from 'next/server';
 
 export async function GET() {
-  const immichServerUrl = process.env.IMMICH_SERVER_URL || 'http://immich-server:2283';
-  const immichApiKey = process.env.IMMICH_API_KEY;
+  const immichServerUrl = config.immichServerUrl;
+  const immichApiKey = config.immichApiKey;
 
   if (!immichApiKey) {
     return NextResponse.json({ error: 'immichApiKeyNotConfigured' }, { status: 500 });

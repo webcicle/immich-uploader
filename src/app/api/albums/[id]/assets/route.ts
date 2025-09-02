@@ -1,12 +1,13 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { config } from '@/lib/config';
 import { ImmichService } from '@/services/immich';
+import { NextRequest, NextResponse } from 'next/server';
 
 export async function PUT(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const immichServerUrl = process.env.IMMICH_SERVER_URL || 'http://immich-server:2283';
-  const immichApiKey = process.env.IMMICH_API_KEY;
+  const immichServerUrl = config.immichServerUrl;
+  const immichApiKey = config.immichApiKey;
 
   if (!immichApiKey) {
     return NextResponse.json({ error: 'immichApiKeyNotConfigured' }, { status: 500 });
@@ -51,8 +52,8 @@ export async function DELETE(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const immichServerUrl = process.env.IMMICH_SERVER_URL || 'http://immich-server:2283';
-  const immichApiKey = process.env.IMMICH_API_KEY;
+  const immichServerUrl = config.immichServerUrl;
+  const immichApiKey = config.immichApiKey;
 
   if (!immichApiKey) {
     return NextResponse.json({ error: 'immichApiKeyNotConfigured' }, { status: 500 });

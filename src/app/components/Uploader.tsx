@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { Upload, Camera, Users, CheckCircle, AlertCircle, Loader2, X } from 'lucide-react';
 import { useLanguage } from '@/app/contexts/LanguageContext';
 import imageCompression from 'browser-image-compression';
+import { apiPath } from '@/lib/paths';
 
 interface FileWithMetadata {
   id: number;
@@ -24,7 +25,6 @@ const ImmichUploader = () => {
   const { translations } = useLanguage();
   const [files, setFiles] = useState<FileWithMetadata[]>([]);
   const [uploading, setUploading] = useState(false);
-  const [compressing, setCompressing] = useState(false);
   const [progress, setProgress] = useState(0);
   const [progressText, setProgressText] = useState('');
   const [progressInterval, setProgressInterval] = useState<NodeJS.Timeout | null>(null);
@@ -39,7 +39,7 @@ const ImmichUploader = () => {
     // Get CSRF token on component mount
     const fetchCsrfToken = async () => {
       try {
-        const response = await fetch('/share-photos/api/csrf');
+        const response = await fetch(apiPath('csrf'));
         if (response.ok) {
           const data = await response.json();
           setCsrfToken(data.csrfToken);
@@ -130,7 +130,7 @@ const ImmichUploader = () => {
     formData.append('albumName', albumName);
 
     try {
-      const response = await fetch('/share-photos/api/upload', {
+      const response = await fetch(apiPath('upload'), {
         method: 'POST',
         headers: {
           'X-CSRF-Token': csrfToken,
@@ -242,7 +242,6 @@ const ImmichUploader = () => {
     setShowResults(false);
     setError('');
     setUploading(false);
-    setCompressing(false);
     setProgress(0);
     setProgressText('');
   };

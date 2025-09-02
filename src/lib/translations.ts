@@ -1,6 +1,8 @@
 // Translation configuration for the Immich Share application
 // Supports English and Swedish languages
 
+import { config } from "./config";
+
 export type Language = 'en' | 'sv';
 
 export interface Translations {
@@ -276,5 +278,5 @@ export function getTranslations(language: Language): Translations {
   return translations[language] || translations.en;
 }
 
-export const defaultLanguage: Language = 'sv';
+export const defaultLanguage: Language = config.defaultLanguage as Language;
 export const availableLanguages: Language[] = ['en', 'sv'];

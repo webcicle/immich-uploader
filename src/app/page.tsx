@@ -1,6 +1,7 @@
 import { Metadata, Viewport } from 'next';
 import ImmichUploader from './components/Uploader';
 import AuthGate from './components/AuthGate';
+import { assetPath, apiPath } from '@/lib/paths';
 
 export const metadata: Metadata = {
   title: 'Share Photos - Immich',
@@ -13,10 +14,10 @@ export const metadata: Metadata = {
     title: 'Share Photos'
   },
   icons: {
-    apple: '/share-photos/icon.svg',
-    icon: '/share-photos/icon.svg'
+    apple: assetPath('/icon.svg'),
+    icon: assetPath('/icon.svg')
   },
-  manifest: '/share-photos/manifest.json'
+  manifest: apiPath('manifest')
 };
 
 export const viewport: Viewport = {

@@ -1,9 +1,9 @@
-import fs from 'fs';
-import { NextRequest, NextResponse } from 'next/server';
-import { ImmichService } from '@/services/immich';
 import { getSession, updateSessionAlbums } from '@/lib/auth';
 import { checkRateLimit, getRateLimitHeaders } from '@/lib/rateLimit';
+import { ImmichService } from '@/services/immich';
+import fs from 'fs';
 import { jwtVerify } from 'jose';
+import { NextRequest, NextResponse } from 'next/server';
 
 export async function POST(req: NextRequest) {
   // Check authentication
@@ -32,10 +32,10 @@ export async function POST(req: NextRequest) {
   }
 
   // Check rate limit per session
-  const rateLimit = checkRateLimit(session.sessionId, 3, 10 * 60 * 1000); // 3 uploads per 10 minutes
+  const rateLimit = checkRateLimit(session.sessionId, 1, 1 * 60 * 1000); // 1 upload batch per 1 minute
   if (!rateLimit.allowed) {
     return NextResponse.json(
-      { error: 'Too many upload requests. Please try again later.' },
+      { error: 'Too many upload requests. Please try again in 1 minute.' },
       { 
         status: 429,
         headers: getRateLimitHeaders(rateLimit)
@@ -83,7 +83,7 @@ export async function POST(req: NextRequest) {
       'video/mp4', 'video/mov', 'video/avi', 'video/quicktime'
     ];
     const maxFileSize = 100 * 1024 * 1024; // 100MB
-    const maxFiles = 50;
+    const maxFiles = 100;
 
     if (photoFiles.length > maxFiles) {
       return NextResponse.json({ 
@@ -121,12 +121,15 @@ export async function POST(req: NextRequest) {
       let tempFilePath: string | null = null;
       
       try {
-        console.log(`Uploading: ${file.name}`);
+        console.log(`Uploading: ${file.name} (${file.type}, ${(file.size / 1024 / 1024).toFixed(2)}MB)`);
         
         // Write file to temporary location
         tempFilePath = `/tmp/${Date.now()}-${file.name}`;
         const buffer = Buffer.from(await file.arrayBuffer());
         fs.writeFileSync(tempFilePath, buffer);
+        
+        // Log file info for debugging
+        console.log(`Wrote temp file: ${tempFilePath}, size: ${buffer.length} bytes`);
         
         const deviceAssetId = immichService.generateDeviceAssetId();
         const deviceId = immichService.getDeviceId();

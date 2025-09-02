@@ -1,4 +1,4 @@
-import { SignJWT, jwtVerify, JWTPayload } from 'jose';
+import { JWTPayload, SignJWT, jwtVerify } from 'jose';
 import { cookies } from 'next/headers';
 
 const SECRET_KEY = new TextEncoder().encode(

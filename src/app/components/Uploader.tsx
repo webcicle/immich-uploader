@@ -4,6 +4,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
 import { Upload, Camera, Users, CheckCircle, AlertCircle, Loader2, X } from 'lucide-react';
 import { useLanguage } from '@/app/contexts/LanguageContext';
+import imageCompression from 'browser-image-compression';
 
 interface FileWithMetadata {
   id: number;
@@ -23,6 +24,7 @@ const ImmichUploader = () => {
   const { translations } = useLanguage();
   const [files, setFiles] = useState<FileWithMetadata[]>([]);
   const [uploading, setUploading] = useState(false);
+  const [compressing, setCompressing] = useState(false);
   const [albumName, setAlbumName] = useState('');
   const [results, setResults] = useState<UploadResult[]>([]);
   const [showResults, setShowResults] = useState(false);
@@ -46,13 +48,51 @@ const ImmichUploader = () => {
     fetchCsrfToken();
   }, []);
 
+  // Compress image if it's too large
+  const compressImageIfNeeded = async (file: File): Promise<File> => {
+    // Only compress images, skip videos
+    if (!file.type.startsWith('image/')) {
+      return file;
+    }
+
+    // Only compress if file is larger than 2MB
+    if (file.size <= 2 * 1024 * 1024) {
+      return file;
+    }
+
+    try {
+      const options = {
+        maxSizeMB: 2, // Compress to max 2MB
+        maxWidthOrHeight: 1920, // Max dimension 1920px
+        useWebWorker: true,
+        fileType: file.type
+      };
+
+      const compressedFile = await imageCompression(file, options);
+      
+      // Ensure the compressed file retains the original filename and type
+      const renamedFile = new File([compressedFile], file.name, {
+        type: file.type,
+        lastModified: file.lastModified
+      });
+      
+      console.log(`Compressed ${file.name}: ${(file.size / 1024 / 1024).toFixed(1)}MB → ${(renamedFile.size / 1024 / 1024).toFixed(1)}MB`);
+      return renamedFile;
+    } catch (error) {
+      console.warn(`Failed to compress ${file.name}, using original:`, error);
+      return file;
+    }
+  };
+
   // API call to upload files
   const uploadFiles = async () => {
     const formData = new FormData();
     
-    files.forEach((fileObj) => {
-      formData.append('photos', fileObj.file);
-    });
+    // Compress files before adding to FormData
+    for (const fileObj of files) {
+      const compressedFile = await compressImageIfNeeded(fileObj.file);
+      formData.append('photos', compressedFile);
+    }
     
     formData.append('albumName', albumName);
 
@@ -107,11 +147,13 @@ const ImmichUploader = () => {
       return;
     }
 
-    setUploading(true);
+    setCompressing(true);
     setError('');
     setResults([]);
     
     try {
+      setUploading(true);
+      setCompressing(false);
       const result = await uploadFiles();
       setResults(result.results || []);
       setShowResults(true);
@@ -124,6 +166,7 @@ const ImmichUploader = () => {
       const errorMessage = error instanceof Error ? error.message : translations.uploadFailed;
       setError(errorMessage);
       setUploading(false);
+      setCompressing(false);
     }
   };
 
@@ -136,6 +179,7 @@ const ImmichUploader = () => {
     setShowResults(false);
     setError('');
     setUploading(false);
+    setCompressing(false);
   };
 
   return (
@@ -177,13 +221,13 @@ const ImmichUploader = () => {
             {/* File Upload Area */}
             <div 
               className={`border-2 border-dashed ${
-                uploading 
+                uploading || compressing
                   ? 'border-gray-200' 
                   : 'border-gray-300 hover:border-blue-400'
               } rounded-lg p-8 text-center mb-6 transition-colors ${
-                !uploading ? 'cursor-pointer' : ''
+                !uploading && !compressing ? 'cursor-pointer' : ''
               }`}
-              onClick={!uploading ? () => fileInputRef.current?.click() : undefined}
+              onClick={!uploading && !compressing ? () => fileInputRef.current?.click() : undefined}
             >
               <Upload className="w-12 h-12 text-gray-400 mx-auto mb-4" />
               <p className="text-lg text-gray-600 mb-2">
@@ -199,7 +243,7 @@ const ImmichUploader = () => {
                 accept="image/*,video/*"
                 onChange={(e) => handleFileSelect(e.target.files)}
                 className="hidden"
-                disabled={uploading}
+                disabled={uploading || compressing}
               />
             </div>
 
@@ -220,7 +264,7 @@ const ImmichUploader = () => {
                         className="w-full h-24 object-cover rounded-lg"
                         unoptimized
                       />
-                      {!uploading && (
+                      {!uploading && !compressing && (
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
@@ -240,10 +284,15 @@ const ImmichUploader = () => {
             {/* Upload Button */}
             <button
               onClick={handleUpload}
-              disabled={files.length === 0 || !albumName.trim() || uploading}
+              disabled={files.length === 0 || !albumName.trim() || uploading || compressing}
               className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg font-medium hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-colors"
             >
-              {uploading ? (
+              {compressing ? (
+                <>
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                  Compressing images...
+                </>
+              ) : uploading ? (
                 <>
                   <Loader2 className="w-5 h-5 animate-spin" />
                   {translations.uploadingPhotos}

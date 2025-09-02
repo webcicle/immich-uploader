@@ -25,6 +25,9 @@ const ImmichUploader = () => {
   const [files, setFiles] = useState<FileWithMetadata[]>([]);
   const [uploading, setUploading] = useState(false);
   const [compressing, setCompressing] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [progressText, setProgressText] = useState('');
+  const [progressInterval, setProgressInterval] = useState<NodeJS.Timeout | null>(null);
   const [albumName, setAlbumName] = useState('');
   const [results, setResults] = useState<UploadResult[]>([]);
   const [showResults, setShowResults] = useState(false);
@@ -84,6 +87,36 @@ const ImmichUploader = () => {
     }
   };
 
+  // Start simulated progress
+  const startSimulatedProgress = () => {
+    const stepSize = 100 / files.length;
+    const maxProgress = stepSize * (files.length - 1); // Stop at penultimate step
+    
+    const interval = setInterval(() => {
+      setProgress(prev => {
+        const newProgress = prev + stepSize;
+        if (newProgress >= maxProgress) {
+          clearInterval(interval);
+          return maxProgress;
+        }
+        return newProgress;
+      });
+    }, 500);
+    
+    setProgressInterval(interval);
+    return interval;
+  };
+
+  // Stop simulated progress and complete
+  const completeProgress = () => {
+    if (progressInterval) {
+      clearInterval(progressInterval);
+      setProgressInterval(null);
+    }
+    setProgress(100);
+    setProgressText('Upload complete!');
+  };
+
   // API call to upload files
   const uploadFiles = async () => {
     const formData = new FormData();
@@ -110,7 +143,10 @@ const ImmichUploader = () => {
         throw new Error(errorData.error || 'Upload failed');
       }
 
-      return await response.json();
+      const result = await response.json();
+      completeProgress();
+      
+      return result;
     } catch (error) {
       console.error('Upload error:', error);
       throw error;
@@ -147,13 +183,16 @@ const ImmichUploader = () => {
       return;
     }
 
-    setCompressing(true);
+    setUploading(true);
     setError('');
     setResults([]);
+    setProgress(0);
+    setProgressText('Uploading photos...');
+    
+    // Start simulated progress
+    startSimulatedProgress();
     
     try {
-      setUploading(true);
-      setCompressing(false);
       const result = await uploadFiles();
       setResults(result.results || []);
       setShowResults(true);
@@ -162,15 +201,30 @@ const ImmichUploader = () => {
       files.forEach(fileObj => URL.revokeObjectURL(fileObj.preview));
       setFiles([]);
       setUploading(false);
+      setProgress(0);
+      setProgressText('');
     } catch (error) {
+      // Clean up progress on error
+      if (progressInterval) {
+        clearInterval(progressInterval);
+        setProgressInterval(null);
+      }
+      
       const errorMessage = error instanceof Error ? error.message : translations.uploadFailed;
       setError(errorMessage);
       setUploading(false);
-      setCompressing(false);
+      setProgress(0);
+      setProgressText('');
     }
   };
 
   const resetForm = () => {
+    // Clean up progress interval
+    if (progressInterval) {
+      clearInterval(progressInterval);
+      setProgressInterval(null);
+    }
+    
     // Clean up object URLs
     files.forEach(fileObj => URL.revokeObjectURL(fileObj.preview));
     setFiles([]);
@@ -180,6 +234,8 @@ const ImmichUploader = () => {
     setError('');
     setUploading(false);
     setCompressing(false);
+    setProgress(0);
+    setProgressText('');
   };
 
   return (
@@ -221,13 +277,13 @@ const ImmichUploader = () => {
             {/* File Upload Area */}
             <div 
               className={`border-2 border-dashed ${
-                uploading || compressing
+                uploading
                   ? 'border-gray-200' 
                   : 'border-gray-300 hover:border-blue-400'
               } rounded-lg p-8 text-center mb-6 transition-colors ${
-                !uploading && !compressing ? 'cursor-pointer' : ''
+                !uploading ? 'cursor-pointer' : ''
               }`}
-              onClick={!uploading && !compressing ? () => fileInputRef.current?.click() : undefined}
+              onClick={!uploading ? () => fileInputRef.current?.click() : undefined}
             >
               <Upload className="w-12 h-12 text-gray-400 mx-auto mb-4" />
               <p className="text-lg text-gray-600 mb-2">
@@ -243,7 +299,7 @@ const ImmichUploader = () => {
                 accept="image/*,video/*"
                 onChange={(e) => handleFileSelect(e.target.files)}
                 className="hidden"
-                disabled={uploading || compressing}
+                disabled={uploading}
               />
             </div>
 
@@ -264,7 +320,7 @@ const ImmichUploader = () => {
                         className="w-full h-24 object-cover rounded-lg"
                         unoptimized
                       />
-                      {!uploading && !compressing && (
+                      {!uploading && (
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
@@ -281,21 +337,32 @@ const ImmichUploader = () => {
               </div>
             )}
 
+            {/* Progress Bar */}
+            {uploading && (
+              <div className="mb-6">
+                <div className="flex justify-between items-center mb-2">
+                  <span className="text-sm font-medium text-gray-700">{progressText}</span>
+                  <span className="text-sm text-gray-500">{Math.round(progress)}%</span>
+                </div>
+                <div className="w-full bg-gray-200 rounded-full h-2">
+                  <div 
+                    className="bg-blue-600 h-2 rounded-full transition-all duration-300 ease-out"
+                    style={{ width: `${progress}%` }}
+                  ></div>
+                </div>
+              </div>
+            )}
+
             {/* Upload Button */}
             <button
               onClick={handleUpload}
-              disabled={files.length === 0 || !albumName.trim() || uploading || compressing}
+              disabled={files.length === 0 || !albumName.trim() || uploading}
               className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg font-medium hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-colors"
             >
-              {compressing ? (
+              {uploading ? (
                 <>
                   <Loader2 className="w-5 h-5 animate-spin" />
-                  Compressing images...
-                </>
-              ) : uploading ? (
-                <>
-                  <Loader2 className="w-5 h-5 animate-spin" />
-                  {translations.uploadingPhotos}
+                  {progressText || translations.uploadingPhotos}
                 </>
               ) : (
                 <>

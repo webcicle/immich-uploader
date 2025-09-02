@@ -98,7 +98,12 @@ const AuthGate = ({ children }: AuthGateProps) => {
         });
       } else {
         const errorData = await response.json();
-        setError(errorData.error || translations.authenticationFailed);
+        const errorKey = (errorData.error || 'authenticationFailed') as keyof typeof translations;
+        if (errorKey in translations) {
+          setError(translations[errorKey]);
+        } else {
+          setError(translations.authenticationFailed);
+        }
       }
     } catch (error) {
       setError(translations.connectionError);

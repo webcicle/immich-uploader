@@ -9,7 +9,7 @@ export async function GET(
   const immichApiKey = process.env.IMMICH_API_KEY;
 
   if (!immichApiKey) {
-    return NextResponse.json({ error: 'Immich API key not configured' }, { status: 500 });
+    return NextResponse.json({ error: 'immichApiKeyNotConfigured' }, { status: 500 });
   }
 
   const immichService = new ImmichService(immichServerUrl, immichApiKey);
@@ -30,9 +30,8 @@ export async function GET(
     return NextResponse.json(album);
   } catch (error) {
     console.error('Error fetching album:', error);
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     return NextResponse.json(
-      { error: 'Failed to fetch album', details: errorMessage },
+      { error: 'failedToFetchAlbum' },
       { status: 500 }
     );
   }

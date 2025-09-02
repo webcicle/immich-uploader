@@ -9,13 +9,13 @@ export async function POST(req: NextRequest) {
   // Check authentication
   const session = await getSession();
   if (!session) {
-    return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
+    return NextResponse.json({ error: 'authenticationRequired' }, { status: 401 });
   }
 
   // Check CSRF token
   const csrfToken = req.headers.get('x-csrf-token');
   if (!csrfToken) {
-    return NextResponse.json({ error: 'CSRF token required' }, { status: 403 });
+    return NextResponse.json({ error: 'csrfTokenRequired' }, { status: 403 });
   }
 
   try {
@@ -25,7 +25,7 @@ export async function POST(req: NextRequest) {
     const { payload } = await jwtVerify(csrfToken, SECRET_KEY);
     
     if (payload.sessionId !== session.sessionId || payload.purpose !== 'csrf') {
-      return NextResponse.json({ error: 'Invalid CSRF token' }, { status: 403 });
+      return NextResponse.json({ error: 'invalidCsrfToken' }, { status: 403 });
     }
   } catch {
     return NextResponse.json({ error: 'Invalid CSRF token' }, { status: 403 });
@@ -35,7 +35,7 @@ export async function POST(req: NextRequest) {
   const rateLimit = checkRateLimit(session.sessionId, 1, 1 * 60 * 1000); // 1 upload batch per 1 minute
   if (!rateLimit.allowed) {
     return NextResponse.json(
-      { error: 'Too many upload requests. Please try again in 1 minute.' },
+      { error: 'tooManyUploadRequests' },
       { 
         status: 429,
         headers: getRateLimitHeaders(rateLimit)
@@ -47,7 +47,7 @@ export async function POST(req: NextRequest) {
   const immichApiKey = process.env.IMMICH_API_KEY;
 
   if (!immichApiKey) {
-    return NextResponse.json({ error: 'Immich API key not configured' }, { status: 500 });
+    return NextResponse.json({ error: 'immichApiKeyNotConfigured' }, { status: 500 });
   }
 
   const immichService = new ImmichService(immichServerUrl, immichApiKey);
@@ -60,11 +60,11 @@ export async function POST(req: NextRequest) {
     const photoFiles = formData.getAll('photos') as File[];
 
     if (!photoFiles || photoFiles.length === 0) {
-      return NextResponse.json({ error: 'No files uploaded' }, { status: 400 });
+      return NextResponse.json({ error: 'noFilesUploaded' }, { status: 400 });
     }
 
     if (!albumName) {
-      return NextResponse.json({ error: 'Album name is required' }, { status: 400 });
+      return NextResponse.json({ error: 'albumNameRequired' }, { status: 400 });
     }
 
     console.log(`Processing upload: ${photoFiles.length} files for album "${albumName}" by ${session.userName}`);
@@ -87,7 +87,7 @@ export async function POST(req: NextRequest) {
 
     if (photoFiles.length > maxFiles) {
       return NextResponse.json({ 
-        error: `Too many files. Maximum ${maxFiles} files allowed.` 
+        error: 'tooManyFiles' 
       }, { status: 400 });
     }
 
@@ -103,7 +103,7 @@ export async function POST(req: NextRequest) {
         uploadResults.push({
           success: false,
           filename: file.name || 'unknown',
-          error: 'Invalid file type. Only images and videos are allowed.'
+          error: 'invalidFileType'
         });
         continue;
       }
@@ -113,7 +113,7 @@ export async function POST(req: NextRequest) {
         uploadResults.push({
           success: false,
           filename: file.name || 'unknown',
-          error: 'File too large. Maximum 100MB per file.'
+          error: 'fileTooLarge'
         });
         continue;
       }
@@ -200,10 +200,8 @@ export async function POST(req: NextRequest) {
 
   } catch (error) {
     console.error('Upload error:', error);
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     return NextResponse.json({ 
-      error: 'Upload failed', 
-      details: errorMessage 
+      error: 'genericError' 
     }, { status: 500 });
   }
 }

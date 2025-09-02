@@ -210,8 +210,17 @@ const ImmichUploader = () => {
         setProgressInterval(null);
       }
       
-      const errorMessage = error instanceof Error ? error.message : translations.uploadFailed;
-      setError(errorMessage);
+      if (error instanceof Error) {
+        // If the error message is a translation key, use it directly
+        const errorKey = error.message as keyof typeof translations;
+        if (errorKey in translations) {
+          setError(translations[errorKey]);
+        } else {
+          setError(translations.uploadFailed);
+        }
+      } else {
+        setError(translations.uploadFailed);
+      }
       setUploading(false);
       setProgress(0);
       setProgressText('');

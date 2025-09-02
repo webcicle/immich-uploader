@@ -60,6 +60,27 @@ export interface Translations {
   uploadFailed: string;
   authenticationFailed: string;
   connectionError: string;
+  genericError: string;
+  
+  // API Error messages
+  authenticationRequired: string;
+  csrfTokenRequired: string;
+  invalidCsrfToken: string;
+  tooManyUploadRequests: string;
+  immichApiKeyNotConfigured: string;
+  noFilesUploaded: string;
+  albumNameRequired: string;
+  invalidFileType: string;
+  fileTooLarge: string;
+  tooManyFiles: string;
+  tooManyAuthAttempts: string;
+  invitationCodeAndNameRequired: string;
+  invalidInvitationCode: string;
+  failedToFetchAlbums: string;
+  failedToFetchAlbum: string;
+  assetIdsRequired: string;
+  failedToAddAssetsToAlbum: string;
+  failedToRemoveAssetsFromAlbum: string;
   
   // Language selector
   language: string;
@@ -125,6 +146,27 @@ export const translations: Record<Language, Translations> = {
     uploadFailed: 'Upload failed. Please try again.',
     authenticationFailed: 'Authentication failed',
     connectionError: 'Connection error. Please try again.',
+    genericError: 'You did something wrong',
+    
+    // API Error messages
+    authenticationRequired: 'Authentication required',
+    csrfTokenRequired: 'CSRF token required',
+    invalidCsrfToken: 'Invalid CSRF token',
+    tooManyUploadRequests: 'Too many upload requests. Please try again in 1 minute.',
+    immichApiKeyNotConfigured: 'Immich API key not configured',
+    noFilesUploaded: 'No files uploaded',
+    albumNameRequired: 'Album name is required',
+    invalidFileType: 'Invalid file type. Only images and videos are allowed.',
+    fileTooLarge: 'File too large. Maximum 100MB per file.',
+    tooManyFiles: 'Too many files. Maximum 100 files allowed.',
+    tooManyAuthAttempts: 'Too many authentication attempts. Please try again later.',
+    invitationCodeAndNameRequired: 'Invitation code and name are required',
+    invalidInvitationCode: 'Invalid invitation code',
+    failedToFetchAlbums: 'Failed to fetch albums',
+    failedToFetchAlbum: 'Failed to fetch album',
+    assetIdsRequired: 'assetIds array is required',
+    failedToAddAssetsToAlbum: 'Failed to add assets to album',
+    failedToRemoveAssetsFromAlbum: 'Failed to remove assets from album',
     
     // Language selector
     language: 'Language',
@@ -189,6 +231,27 @@ export const translations: Record<Language, Translations> = {
     uploadFailed: 'Uppladdningen misslyckades. Försök igen.',
     authenticationFailed: 'Autentisering misslyckades',
     connectionError: 'Anslutningsfel. Försök igen.',
+    genericError: 'Du gjorde fel',
+    
+    // API Error messages
+    authenticationRequired: 'Autentisering krävs',
+    csrfTokenRequired: 'CSRF-token krävs',
+    invalidCsrfToken: 'Ogiltig CSRF-token',
+    tooManyUploadRequests: 'För många uppladdningsförfrågningar. Försök igen om 1 minut.',
+    immichApiKeyNotConfigured: 'Immich API-nyckel är inte konfigurerad',
+    noFilesUploaded: 'Inga filer uppladdade',
+    albumNameRequired: 'Albumnamn krävs',
+    invalidFileType: 'Ogiltig filtyp. Endast bilder och videor är tillåtna.',
+    fileTooLarge: 'Filen är för stor. Maximalt 100MB per fil.',
+    tooManyFiles: 'För många filer. Maximalt 100 filer tillåtna.',
+    tooManyAuthAttempts: 'För många autentiseringsförsök. Försök igen senare.',
+    invitationCodeAndNameRequired: 'Inbjudningskod och namn krävs',
+    invalidInvitationCode: 'Ogiltig inbjudningskod',
+    failedToFetchAlbums: 'Misslyckades att hämta album',
+    failedToFetchAlbum: 'Misslyckades att hämta album',
+    assetIdsRequired: 'assetIds-array krävs',
+    failedToAddAssetsToAlbum: 'Misslyckades att lägga till resurser i album',
+    failedToRemoveAssetsFromAlbum: 'Misslyckades att ta bort resurser från album',
     
     // Language selector
     language: 'Språk',

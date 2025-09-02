@@ -9,7 +9,7 @@ export async function PUT(
   const immichApiKey = process.env.IMMICH_API_KEY;
 
   if (!immichApiKey) {
-    return NextResponse.json({ error: 'Immich API key not configured' }, { status: 500 });
+    return NextResponse.json({ error: 'immichApiKeyNotConfigured' }, { status: 500 });
   }
 
   const immichService = new ImmichService(immichServerUrl, immichApiKey);
@@ -20,7 +20,7 @@ export async function PUT(
     const { assetIds } = body;
 
     if (!Array.isArray(assetIds) || assetIds.length === 0) {
-      return NextResponse.json({ error: 'assetIds array is required' }, { status: 400 });
+      return NextResponse.json({ error: 'assetIdsRequired' }, { status: 400 });
     }
 
     const { searchParams } = new URL(req.url);
@@ -40,9 +40,8 @@ export async function PUT(
     });
   } catch (error) {
     console.error('Error adding assets to album:', error);
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     return NextResponse.json(
-      { error: 'Failed to add assets to album', details: errorMessage },
+      { error: 'failedToAddAssetsToAlbum' },
       { status: 500 }
     );
   }
@@ -56,7 +55,7 @@ export async function DELETE(
   const immichApiKey = process.env.IMMICH_API_KEY;
 
   if (!immichApiKey) {
-    return NextResponse.json({ error: 'Immich API key not configured' }, { status: 500 });
+    return NextResponse.json({ error: 'immichApiKeyNotConfigured' }, { status: 500 });
   }
 
   const immichService = new ImmichService(immichServerUrl, immichApiKey);
@@ -67,7 +66,7 @@ export async function DELETE(
     const { assetIds } = body;
 
     if (!Array.isArray(assetIds) || assetIds.length === 0) {
-      return NextResponse.json({ error: 'assetIds array is required' }, { status: 400 });
+      return NextResponse.json({ error: 'assetIdsRequired' }, { status: 400 });
     }
 
     const result = await immichService.removeAssetsFromAlbum(resolvedParams.id, assetIds);
@@ -80,9 +79,8 @@ export async function DELETE(
     });
   } catch (error) {
     console.error('Error removing assets from album:', error);
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     return NextResponse.json(
-      { error: 'Failed to remove assets from album', details: errorMessage },
+      { error: 'failedToRemoveAssetsFromAlbum' },
       { status: 500 }
     );
   }

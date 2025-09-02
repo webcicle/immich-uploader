@@ -10,7 +10,7 @@ export async function POST(req: NextRequest) {
   const rateLimit = checkRateLimit(`auth-${clientIP}`, 5, 15 * 60 * 1000); // 5 attempts per 15 minutes
   if (!rateLimit.allowed) {
     return NextResponse.json(
-      { error: 'Too many authentication attempts. Please try again later.' },
+      { error: 'tooManyAuthAttempts' },
       { 
         status: 429,
         headers: getRateLimitHeaders(rateLimit)
@@ -23,14 +23,14 @@ export async function POST(req: NextRequest) {
     
     if (!invitationCode || !userName) {
       return NextResponse.json(
-        { error: 'Invitation code and name are required' },
+        { error: 'invitationCodeAndNameRequired' },
         { status: 400 }
       );
     }
     
     if (!verifyInvitationCode(invitationCode)) {
       return NextResponse.json(
-        { error: 'Invalid invitation code' },
+        { error: 'invalidInvitationCode' },
         { status: 401 }
       );
     }
@@ -65,7 +65,7 @@ export async function POST(req: NextRequest) {
   } catch (error) {
     console.error('Auth error:', error);
     return NextResponse.json(
-      { error: 'Authentication failed' },
+      { error: 'authenticationFailed' },
       { status: 500 }
     );
   }

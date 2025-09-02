@@ -32,6 +32,10 @@ export interface Translations {
   createAlbumAndUpload: string;
   uploadingPhotos: string;
   
+  // Progress messages
+  uploadingPhotosProgress: string;
+  uploadCompleteProgress: string;
+  
   // Results page
   uploadComplete: string;
   createdAlbumWith: string;
@@ -118,6 +122,10 @@ export const translations: Record<Language, Translations> = {
     createAlbumAndUpload: 'Create Album & Upload',
     uploadingPhotos: 'Uploading Photos...',
     
+    // Progress messages
+    uploadingPhotosProgress: 'Uploading photos...',
+    uploadCompleteProgress: 'Upload complete!',
+    
     // Results page
     uploadComplete: 'Upload Complete!',
     createdAlbumWith: 'Created album',
@@ -202,6 +210,10 @@ export const translations: Record<Language, Translations> = {
     selectedPhotos: 'Valda Foton',
     createAlbumAndUpload: 'Skapa Album & Ladda upp',
     uploadingPhotos: 'Laddar upp Foton...',
+    
+    // Progress messages
+    uploadingPhotosProgress: 'Laddar upp foton...',
+    uploadCompleteProgress: 'Uppladdning klar!',
     
     // Results page
     uploadComplete: 'Uppladdningen är klar!',

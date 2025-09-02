@@ -114,7 +114,7 @@ const ImmichUploader = () => {
       setProgressInterval(null);
     }
     setProgress(100);
-    setProgressText('Upload complete!');
+    setProgressText(translations.uploadCompleteProgress);
   };
 
   // API call to upload files
@@ -187,7 +187,7 @@ const ImmichUploader = () => {
     setError('');
     setResults([]);
     setProgress(0);
-    setProgressText('Uploading photos...');
+    setProgressText(translations.uploadingPhotosProgress);
     
     // Start simulated progress
     startSimulatedProgress();
